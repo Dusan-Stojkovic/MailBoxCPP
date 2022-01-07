@@ -1,0 +1,29 @@
+
+OBJ := obj
+SRC := src
+INCL := include
+target := client
+
+#This variable needs to be modified if when new headers are included
+objs := $(OBJ)/client_app.o $(OBJ)/TCPClient.o $(OBJ)/TCPHandler.o
+
+deps := $(patsubst %.o,%.d,$(objs))
+DEPFLAGS = -MMD -MF $(@:.o=.d)
+
+CPP := g++
+CFLAGS := -g -pthread -Wall
+
+all: $(target)
+
+-include $(deps)
+
+client: $(objs)
+	$(CPP) $(CFLAGS) -o $@ $^
+
+$(OBJ)/%.o: $(SRC)/%.cpp 
+	$(CPP) $(CFLAGS) -c -o $@ $< $(DEPFLAGS)
+
+.PHONY: clean
+
+clean:
+	rm -rf client $(OBJ)/*.o $(OBJ)/*.d

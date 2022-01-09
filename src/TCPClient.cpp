@@ -3,12 +3,18 @@
 
 TCPClient::TCPClient(string addr)
 {
-	sock = Socket_create(); 
-	server = Gen_addr(AF_INET, DEFAULT_PORT, addr.c_str());
-	Connect(sock, server);
+	client = Socket_create(AF_INET, DEFAULT_PORT, addr.c_str()); 
+	Connect(client);
 }
 
 int TCPClient::Send(string message)
 {
-	return TCPHandler::Send(sock, message, (int)message.length(), 0);	
+	return TCPHandler::Send(client.sock, message.c_str(), (int)message.length(), 0);	
+}
+
+string TCPClient::Recieve()
+{
+	char msg[DEFAULT_BUFLEN] = { 0 };
+	TCPHandler::Recieve(client.sock, msg, 0);
+	return string(msg);
 }

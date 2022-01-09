@@ -7,16 +7,16 @@
 class TCPClient : protected TCPHandler 
 {
 	private:
-		int sock;
-		struct sockaddr_in server;
+		Socket client;
 
 	public:
 		TCPClient() { }
-		~TCPClient() { Socket_close(sock); }
+		~TCPClient() { Socket_close(client.sock); }
 
 		//After this you should be able to send data and recieve it
 		TCPClient(string);
 		int Send(string);	
+		string Recieve();
 };
 
 #endif

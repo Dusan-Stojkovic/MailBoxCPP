@@ -1,16 +1,22 @@
 
 #include "../include/TCPHandler.hpp"
 
-int TCPHandler::Socket_create()
+Socket TCPHandler::Socket_create(short sin_fam, unsigned short port, string addr)
 {
-    int sock = socket(AF_INET , SOCK_STREAM , 0);
-    if (sock == -1)
+	Socket s;
+    s.sock = socket(AF_INET , SOCK_STREAM , 0);
+    if (s.sock == -1)
     {
 		NetworkException e("Could not create socket");
 		throw e;
     }
+
+    s.addr.sin_family = sin_fam;
+    s.addr.sin_addr.s_addr = (addr == "0") ? INADDR_ANY : inet_addr(addr.c_str());
+    s.addr.sin_port = htons(port);
+
 	cout << "TCPHandler: Socket created." << endl;
-	return sock;
+	return s;
 }
 
 void TCPHandler::Socket_close(int sock)
@@ -19,24 +25,16 @@ void TCPHandler::Socket_close(int sock)
 	cout << "TCPHandler: Socket closed" << endl;
 }
 
-struct sockaddr_in TCPHandler::Gen_addr(short sin_fam, unsigned short port, string addr)
+int TCPHandler::Bind(Socket server)
 {
-	struct sockaddr_in server;
-    server.sin_family = sin_fam;
-    server.sin_addr.s_addr = (addr == "0") ? INADDR_ANY : inet_addr(addr.c_str());
-    server.sin_port = htons(port);
-	return server;
-}
-
-int TCPHandler::Bind(int sock, struct sockaddr_in server)
-{
-    if(bind(sock,(struct sockaddr *)&server , sizeof(server)) < 0)
+	sockaddr_in addr = server.addr;
+    if(bind(server.sock,(struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
        	NetworkException e("Bind failed"); 
 		throw e;
     }
     cout << "TCPHandler: Binding done" << endl;
-	return sock;
+	return 0;
 }
 
 void TCPHandler::Listen(int sock)
@@ -45,9 +43,9 @@ void TCPHandler::Listen(int sock)
     cout << "TCPHandler: Server is listening" << endl;
 }
 
-void TCPHandler::Connect(int sock, struct sockaddr_in addr)
+void TCPHandler::Connect(Socket client)
 {
-    if(connect(sock , (struct sockaddr *)&addr , sizeof(addr)) < 0)
+    if(connect(client.sock , (struct sockaddr *)&(client.addr), sizeof(client.addr)) < 0)
     {
 		NetworkException e("Connection with remote server failed");
 		throw e;
@@ -55,19 +53,19 @@ void TCPHandler::Connect(int sock, struct sockaddr_in addr)
 	cout << "TCPHandler: Client connected." << endl;
 }
 
-int TCPHandler::Accept(int socket_desc, struct sockaddr_in addr)
+int TCPHandler::Accept(int socket_desc, Socket* client) 
 {
     int c = sizeof(struct sockaddr_in);
 
     //accept connection from an incoming client
-    int client_sock = accept(socket_desc, (struct sockaddr *)&addr, (socklen_t*)&c);
-    if (client_sock < 0)
+    client->sock = accept(socket_desc, (struct sockaddr *)&(client->addr), (socklen_t*)&c);
+    if (client->sock < 0)
     {
 		NetworkException e("Server could not accept connection from client");
 		throw e;
     }
     cout << "TCPHandler: Server accepted the connection" << endl;
-	return client_sock;
+	return 0;
 }
 
 int TCPHandler::Send(int sock, string message, int len, int flag)
@@ -83,10 +81,20 @@ int TCPHandler::Send(int sock, string message, int len, int flag)
 int TCPHandler::Recieve(int sock, char* message, int flag)
 {
 	//TODO figure out how to print when the client had disconnected
-    if(recv(sock , message , DEFAULT_BUFLEN , flag) > 0 )
+	int read_size;
+    if((read_size = recv(sock , message , DEFAULT_BUFLEN , flag)) > 0 )
     {
-		return 0;
+		return read_size;
     }
-	return 1;
+	if(read_size == 0)
+	{
+		cout << "TCPHandler: Client disconnected" << endl;
+		return 0;
+	}
+	else
+	{
+		NetworkException e("Failed to recv");
+		throw e;
+	}
 }
 

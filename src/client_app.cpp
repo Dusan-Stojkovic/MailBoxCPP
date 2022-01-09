@@ -1,12 +1,31 @@
 
 #include"../include/TCPClient.hpp"
+#include <signal.h>
+
+void sigHandler(int sig_num)
+{
+	signal(SIGINT, sigHandler);
+	cin.unget();
+	cout << "Can't terminate this program using CTRL + C, try EXIT" << endl;
+}
 
 int main()
 {
+	string msg = "";
 	try
 	{
 		TCPClient client("127.0.0.1");
-		client.Send("this is a test");
+		signal(SIGINT, sigHandler);
+		while(getline(cin, msg))
+		{
+			if(msg == "EXIT")
+			{
+				return 0;
+			}
+			client.Send(msg);
+			cout << client.Recieve() << endl;
+			msg = "";
+		}
 	}
 	catch(NetworkException& ex)
 	{

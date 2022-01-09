@@ -1,24 +1,26 @@
 #include"../include/TCPServer.hpp"
 
-TCPServer::TCPServer()
+TCPServer::TCPServer(short sin_fam, unsigned short port, string addr)
 {
-	conn_clients = vector<client_sock>();
-	sock_server = Socket_create();
-	server = Gen_addr(AF_INET, DEFAULT_PORT, "0");
-	Bind(sock_server, server);
-	Listen(sock_server);
-
-	// Probably need to make Accept in a seperate thread
-	// this part is just a test, I will need to refactor it
-	client_sock tst;
-	tst.id = 0;
-	tst.sock = Accept(sock_server, tst.client); 
-	conn_clients.push_back(tst);
+	server = Socket_create(sin_fam, port, "0");
+	Bind(server);
+	Listen(server.sock);
 }
 
-string TCPServer::Recieve()
+void TCPServer::Accept(Socket* client)
 {
-	char msg[DEFAULT_BUFLEN];
-	TCPHandler::Recieve(conn_clients[0].sock, msg, 0);
+	TCPHandler::Accept(server.sock, client);
+}
+
+string TCPServer::Recieve(Socket client)
+{
+	char msg[DEFAULT_BUFLEN] = { 0 };
+	TCPHandler::Recieve(client.sock, msg, 0);
 	return string(msg);
+}
+
+//s is client socket, from mailbox
+int TCPServer::Send(int s, string msg)
+{
+	return TCPHandler::Send(s, msg, (int)msg.length(), 0);	
 }

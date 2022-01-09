@@ -5,7 +5,7 @@ INCL := include
 target := server
 
 #This variable needs to be modified if when new headers are included
-objs := $(OBJ)/server_app.o $(OBJ)/TCPServer.o $(OBJ)/TCPHandler.o
+objs := $(OBJ)/server_app.o $(OBJ)/Mailbox.o $(OBJ)/TCPServer.o $(OBJ)/TCPHandler.o 
 
 deps := $(patsubst %.o,%.d,$(objs))
 DEPFLAGS = -MMD -MF $(@:.o=.d)

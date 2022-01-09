@@ -1,12 +1,12 @@
 
-#include "../include/TCPServer.hpp"
+#include "../include/Mailbox.hpp"
 
 int main()
 {
 	try
 	{
-		TCPServer s;
-		cout<< s.Recieve() << endl;
+		Mailbox m;
+		Mailbox::Eval(ref(m));
 	}
 	catch(NetworkException& ex)
 	{

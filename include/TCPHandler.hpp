@@ -14,6 +14,13 @@
 
 using namespace std;
 
+
+typedef struct Socket_st
+{
+	int sock;
+	struct sockaddr_in addr;
+}Socket;
+
 //TODO Move this into a separate utils folder
 class NetworkException : public exception
 {
@@ -32,13 +39,18 @@ class NetworkException : public exception
 class TCPHandler 
 {
 	protected:
-		int Socket_create();
+		Socket Socket_create(short, unsigned short, string);
 		void Socket_close(int);
-		struct sockaddr_in Gen_addr(short, unsigned short, string);
-		int Bind(int, struct sockaddr_in);
+
+		//Server side
+		int Bind(Socket);
 		void Listen(int);
-		int Accept(int, struct sockaddr_in); 
-		void Connect(int, struct sockaddr_in);
+		int Accept(int, Socket*); 
+		
+		//Client side
+		void Connect(Socket);
+
+		//Dual channel
 		int Send(int, string, int, int);
 		int Recieve(int, char*, int);
 };

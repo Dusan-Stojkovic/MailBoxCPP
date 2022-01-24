@@ -52,7 +52,7 @@ class TCPHandler
 
 		//Dual channel
 		int Send(int, string, int, int);
-		int Receive(int, char*, int);
+		int Recieve(int, char*, int);
 };
 
 #endif

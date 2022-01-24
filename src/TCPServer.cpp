@@ -12,10 +12,10 @@ void TCPServer::Accept(Socket* client)
 	TCPHandler::Accept(server.sock, client);
 }
 
-string TCPServer::Receive(Socket client)
+string TCPServer::Recieve(Socket client)
 {
 	char msg[DEFAULT_BUFLEN] = { 0 };
-	TCPHandler::Receive(client.sock, msg, 0);
+	TCPHandler::Recieve(client.sock, msg, 0);
 	return string(msg);
 }
 

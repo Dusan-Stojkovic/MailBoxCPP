@@ -13,10 +13,10 @@ class TCPClient : protected TCPHandler
 		TCPClient() { }
 		~TCPClient() { Socket_close(client.sock); }
 
-		//After this you should be able to send data and receive it
+		//After this you should be able to send data and recieve it
 		TCPClient(string);
 		int Send(string);	
-		string Receive();
+		string Recieve();
 };
 
 #endif

@@ -10,21 +10,22 @@
 #include<thread>
 
 #include"TCPServer.hpp"
-
+//mutex mx;
 class Mailbox 
 {
 	private:
 		vector<Socket> conn_clients;
 		TCPServer server;
 
-		static const map<string, function<int(Socket, string)>> operationTable;
-
-		void logins_create();
+		static const map<string, function<int(Mailbox&, Socket, string, string&)>> operationTable;
 		
+		void logins_create();
+
 		static void client_handler(Mailbox&, Socket, string);
 	public:
-		mutex mx;
-
+		//mutex mx;
+		//static string BOX;
+		//static int rbr;
 		Mailbox();
 		Mailbox(const Mailbox& m);
 		Mailbox& operator=(const Mailbox& rhs) { return *this; };
@@ -37,22 +38,22 @@ class Mailbox
 		static void Eval(Mailbox&);
 
 		//Send opeartion, server side
-		static int Forward(Socket, string);
+		static int Forward(Mailbox&, Socket, string, string&);
 
-		//Recieve operation, server side
-		static int Update(Socket, string);
+		//Receive operation, server side
+		static int Update(Mailbox&, Socket, string, string&);
 
 		//Check operation, server side
-		static int Status(Socket, string);
+		static int Status(Mailbox&, Socket, string, string&);
 
 		//Login operation, server side
-		static int Login(Socket, string);
+		static int Login(Mailbox&, Socket, string, string&);
 
 		//Logout operation, server side
-		static int Logout(Socket, string);
+		static int Logout(Mailbox&, Socket, string, string&);
 		
 		//Register operation, server side
-		static int Register(Socket, string);
+		static int Register(Mailbox&, Socket, string, string&);
 };
 
 

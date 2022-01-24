@@ -16,7 +16,7 @@ class TCPServer : protected TCPHandler
 		~TCPServer() { }
 		
 		int Send(int, string);
-		string Recieve(Socket);
+		string Receive(Socket);
 		void Accept(Socket*);
 };
 

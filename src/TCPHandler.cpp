@@ -78,7 +78,7 @@ int TCPHandler::Send(int sock, string message, int len, int flag)
 	return 0;
 }
 
-int TCPHandler::Recieve(int sock, char* message, int flag)
+int TCPHandler::Receive(int sock, char* message, int flag)
 {
 	//TODO figure out how to print when the client had disconnected
 	int read_size;

@@ -12,9 +12,9 @@ int TCPClient::Send(string message)
 	return TCPHandler::Send(client.sock, message.c_str(), (int)message.length(), 0);	
 }
 
-string TCPClient::Recieve()
+string TCPClient::Receive()
 {
 	char msg[DEFAULT_BUFLEN] = { 0 };
-	TCPHandler::Recieve(client.sock, msg, 0);
+	TCPHandler::Receive(client.sock, msg, 0);
 	return string(msg);
 }
